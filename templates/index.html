@@ -2,13 +2,93 @@
 <html>
 <head>
     <title>SafeScan - Website Scanner</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e9edf2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .card {
+            background: white;
+            max-width: 500px;
+            width: 100%;
+            padding: 2rem;
+            border-radius: 28px;
+            box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        .tagline {
+            color: #4b5563;
+            margin-bottom: 2rem;
+            font-size: 1rem;
+        }
+        input {
+            width: 100%;
+            padding: 14px 18px;
+            font-size: 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 60px;
+            outline: none;
+            transition: all 0.2s ease;
+            margin-bottom: 1.2rem;
+            font-family: inherit;
+        }
+        input:focus {
+            border-color: #2a5298;
+            box-shadow: 0 0 0 3px rgba(42, 82, 152, 0.2);
+        }
+        button {
+            background: #2a5298;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: 500;
+            border-radius: 60px;
+            width: 100%;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-family: inherit;
+        }
+        button:hover {
+            background: #1e3c72;
+        }
+        .footer {
+            margin-top: 2rem;
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+    </style>
 </head>
 <body>
-    <h1>SafeScan</h1>
-    <p>Free, open-source website scanner for security & accessibility</p>
-    <form action="/scan" method="post">
-        <input type="text" name="url" placeholder="https://example.com" size="40" required>
-        <button type="submit">Scan</button>
-    </form>
+    <div class="card">
+        <h1>SafeScan</h1>
+        <div class="tagline">Website security & compliance check — free, open source</div>
+        <form action="/scan" method="post">
+            <input type="text" name="url" placeholder="https://example.com" required>
+            <button type="submit">Scan website</button>
+        </form>
+        <div class="footer">
+            Checks SSL · HTTPS redirect · security headers · privacy policy · alt text
+        </div>
+    </div>
 </body>
 </html>
