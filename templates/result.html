@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SafeScan - Results</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; }
+        h1 { color: #333; }
+        .result-card { background: #f4f4f4; border-left: 5px solid; padding: 15px; margin: 15px 0; border-radius: 5px; }
+        .pass { border-left-color: #2ecc71; }
+        .warn { border-left-color: #f39c12; }
+        .fail { border-left-color: #e74c3c; }
+        .status-icon { font-size: 24px; margin-right: 10px; }
+        .back-link { display: inline-block; margin-top: 20px; color: #3498db; text-decoration: none; }
+        details { margin-top: 5px; font-size: 0.9em; color: #555; }
+    </style>
+</head>
+<body>
+    <h1>SafeScan Report for {{ url }}</h1>
+    
+    <!-- SSL Check -->
+    <div class="result-card {{ 'pass' if results.ssl.valid else 'fail' if results.ssl.error else 'warn' }}">
+        <span class="status-icon">
+            {% if results.ssl.valid %}✅{% else %}❌{% endif %}
+        </span>
+        <strong>SSL Certificate</strong><br>
+        {% if results.ssl.error %}
+            Error: {{ results.ssl.error }}
+        {% elif results.ssl.valid %}
+            Valid – expires {{ results.ssl.expiry }}, issuer: {{ results.ssl.issuer }}
+        {% else %}
+            Expired on {{ results.ssl.expiry }}
+        {% endif %}
+    </div>
+    
+    <!-- HTTPS Redirect -->
+    <div class="result-card {{ 'pass' if results.redirect.status == '✅' else 'warn' if results.redirect.status == '⚠️' else 'fail' }}">
+        <span class="status-icon">{{ results.redirect.status }}</span>
+        <strong>HTTPS Redirect</strong><br>
+        {{ results.redirect.message }}
+    </div>
+    
+    <!-- Security Headers -->
+    <div class="result-card {{ 'pass' if results.headers.status == '✅' else 'warn' if results.headers.status == '⚠️' else 'fail' }}">
+        <span class="status-icon">{{ results.headers.status }}</span>
+        <strong>Security Headers</strong><br>
+        {{ results.headers.message }}
+        <details>
+            <summary>Details</summary>
+            HSTS: {{ results.headers.hsts }}<br>
+            CSP: {{ results.headers.csp }}<br>
+            X‑Frame‑Options: {{ results.headers.xframe }}
+        </details>
+    </div>
+    
+    <!-- Privacy Policy -->
+    <div class="result-card {{ 'pass' if results.privacy.status == '✅' else 'warn' if results.privacy.status == '⚠️' else 'fail' }}">
+        <span class="status-icon">{{ results.privacy.status }}</span>
+        <strong>Privacy Policy</strong><br>
+        {{ results.privacy.message }}
+    </div>
+    
+    <!-- Alt Text (Accessibility) -->
+    <div class="result-card {{ 'pass' if results.alttext.status == '✅' else 'warn' if results.alttext.status == '⚠️' else 'fail' }}">
+        <span class="status-icon">{{ results.alttext.status }}</span>
+        <strong>Image Alt Text (Accessibility)</strong><br>
+        {{ results.alttext.message }}
+    </div>
+    
+    <a href="/" class="back-link">← Scan another site</a>
+</body>
+</html>
