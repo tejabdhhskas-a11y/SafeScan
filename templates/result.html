@@ -3,69 +3,170 @@
 <head>
     <title>SafeScan - Results</title>
     <style>
-        body { font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; }
-        h1 { color: #333; }
-        .result-card { background: #f4f4f4; border-left: 5px solid; padding: 15px; margin: 15px 0; border-radius: 5px; }
-        .pass { border-left-color: #2ecc71; }
-        .warn { border-left-color: #f39c12; }
-        .fail { border-left-color: #e74c3c; }
-        .status-icon { font-size: 24px; margin-right: 10px; }
-        .back-link { display: inline-block; margin-top: 20px; color: #3498db; text-decoration: none; }
-        details { margin-top: 5px; font-size: 0.9em; color: #555; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e9edf2 100%);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            max-width: 800px;
+            width: 100%;
+        }
+        .card {
+            background: white;
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            margin-bottom: 1.5rem;
+            transition: box-shadow 0.2s;
+        }
+        .card:hover {
+            box-shadow: 0 20px 30px -12px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 0.25rem;
+        }
+        .url {
+            color: #4b5563;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            word-break: break-all;
+        }
+        .result-item {
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid #eef2f6;
+        }
+        .result-item:last-child {
+            border-bottom: none;
+        }
+        .status-icon {
+            font-size: 1.4rem;
+            margin-right: 0.5rem;
+        }
+        .result-title {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+        .result-detail {
+            color: #4b5563;
+            font-size: 0.9rem;
+        }
+        .back-link {
+            display: inline-block;
+            background: #2a5298;
+            color: white;
+            text-decoration: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+        .back-link:hover {
+            background: #1e3c72;
+        }
+        hr {
+            margin: 1rem 0;
+            border: none;
+            border-top: 1px solid #eef2f6;
+        }
+        .details {
+            margin-top: 0.5rem;
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+        summary {
+            cursor: pointer;
+            font-size: 0.8rem;
+            color: #2a5298;
+        }
     </style>
 </head>
 <body>
-    <h1>SafeScan Report for {{ url }}</h1>
-    
-    <!-- SSL Check -->
-    <div class="result-card {{ 'pass' if results.ssl.valid else 'fail' if results.ssl.error else 'warn' }}">
-        <span class="status-icon">
-            {% if results.ssl.valid %}✅{% else %}❌{% endif %}
-        </span>
-        <strong>SSL Certificate</strong><br>
-        {% if results.ssl.error %}
-            Error: {{ results.ssl.error }}
-        {% elif results.ssl.valid %}
-            Valid – expires {{ results.ssl.expiry }}, issuer: {{ results.ssl.issuer }}
-        {% else %}
-            Expired on {{ results.ssl.expiry }}
-        {% endif %}
+<div class="container">
+    <div class="card">
+        <h1>SafeScan</h1>
+        <div class="url">Report for: {{ url }}</div>
+
+        <!-- SSL -->
+        <div class="result-item">
+            <div>
+                <span class="status-icon">{% if results.ssl.valid %}✅{% else %}❌{% endif %}</span>
+                <span class="result-title">SSL Certificate</span>
+            </div>
+            <div class="result-detail">
+                {% if results.ssl.error %}
+                    Error: {{ results.ssl.error }}
+                {% elif results.ssl.valid %}
+                    Valid – expires {{ results.ssl.expiry }}<br>
+                    Issuer: {{ results.ssl.issuer }}
+                {% else %}
+                    Expired on {{ results.ssl.expiry }}
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- HTTPS Redirect -->
+        <div class="result-item">
+            <div>
+                <span class="status-icon">{{ results.redirect.status }}</span>
+                <span class="result-title">HTTPS Redirect</span>
+            </div>
+            <div class="result-detail">{{ results.redirect.message }}</div>
+        </div>
+
+        <!-- Security Headers -->
+        <div class="result-item">
+            <div>
+                <span class="status-icon">{{ results.headers.status }}</span>
+                <span class="result-title">Security Headers</span>
+            </div>
+            <div class="result-detail">
+                {{ results.headers.message }}
+                <details class="details">
+                    <summary>Show details</summary>
+                    HSTS: {{ results.headers.hsts }}<br>
+                    CSP: {{ results.headers.csp }}<br>
+                    X‑Frame‑Options: {{ results.headers.xframe }}
+                </details>
+            </div>
+        </div>
+
+        <!-- Privacy Policy -->
+        <div class="result-item">
+            <div>
+                <span class="status-icon">{{ results.privacy.status }}</span>
+                <span class="result-title">Privacy Policy</span>
+            </div>
+            <div class="result-detail">{{ results.privacy.message }}</div>
+        </div>
+
+        <!-- Alt Text -->
+        <div class="result-item">
+            <div>
+                <span class="status-icon">{{ results.alttext.status }}</span>
+                <span class="result-title">Image Alt Text (accessibility)</span>
+            </div>
+            <div class="result-detail">{{ results.alttext.message }}</div>
+        </div>
+
+        <hr>
+        <a href="/" class="back-link">← Scan another website</a>
     </div>
-    
-    <!-- HTTPS Redirect -->
-    <div class="result-card {{ 'pass' if results.redirect.status == '✅' else 'warn' if results.redirect.status == '⚠️' else 'fail' }}">
-        <span class="status-icon">{{ results.redirect.status }}</span>
-        <strong>HTTPS Redirect</strong><br>
-        {{ results.redirect.message }}
-    </div>
-    
-    <!-- Security Headers -->
-    <div class="result-card {{ 'pass' if results.headers.status == '✅' else 'warn' if results.headers.status == '⚠️' else 'fail' }}">
-        <span class="status-icon">{{ results.headers.status }}</span>
-        <strong>Security Headers</strong><br>
-        {{ results.headers.message }}
-        <details>
-            <summary>Details</summary>
-            HSTS: {{ results.headers.hsts }}<br>
-            CSP: {{ results.headers.csp }}<br>
-            X‑Frame‑Options: {{ results.headers.xframe }}
-        </details>
-    </div>
-    
-    <!-- Privacy Policy -->
-    <div class="result-card {{ 'pass' if results.privacy.status == '✅' else 'warn' if results.privacy.status == '⚠️' else 'fail' }}">
-        <span class="status-icon">{{ results.privacy.status }}</span>
-        <strong>Privacy Policy</strong><br>
-        {{ results.privacy.message }}
-    </div>
-    
-    <!-- Alt Text (Accessibility) -->
-    <div class="result-card {{ 'pass' if results.alttext.status == '✅' else 'warn' if results.alttext.status == '⚠️' else 'fail' }}">
-        <span class="status-icon">{{ results.alttext.status }}</span>
-        <strong>Image Alt Text (Accessibility)</strong><br>
-        {{ results.alttext.message }}
-    </div>
-    
-    <a href="/" class="back-link">← Scan another site</a>
+</div>
 </body>
 </html>
